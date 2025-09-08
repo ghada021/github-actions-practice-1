@@ -1,4 +1,4 @@
-name: Practice 2 - Event Name Detector
+name: Event Name Detector
 
 on:
   workflow_dispatch:
@@ -7,8 +7,11 @@ on:
 
 jobs:
   echo:
-    name: Event Detector
+    name: Echo the trigger
     runs-on: ubuntu-latest
     steps:
-      - name: Show triggering event
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Show which event triggered the workflow
         run: echo "I've been triggered by ${{ github.event_name }} event"
