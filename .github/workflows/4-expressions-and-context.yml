@@ -87,18 +87,19 @@ jobs:
           echo "Running on Windows - using chocolatey package manager"
           echo "Windows runner detected: ${{ runner.os }}"
 
-      # String Manipulation Functions
+      # String Manipulation Functions (fixed)
       - name: String Manipulation Functions
         run: |
           echo "=== String Transformations ==="
-          echo "Original ref: ${{ github.ref }}"
-          echo "Clean branch name: ${{ github.ref_name }}"
-          echo "Uppercase branch: ${{ upper(github.ref_name) }}"
-          echo "Lowercase branch: ${{ lower(github.ref_name) }}"
-          echo "Branch contains 'main': ${{ contains(github.ref_name, 'main') }}"
-          echo "Branch starts with 'feature': ${{ startsWith(github.ref_name, 'feature/') }}"
+          echo "Original ref: $GITHUB_REF"
+          CLEAN_BRANCH="${GITHUB_REF#refs/heads/}"
+          echo "Clean branch name: $CLEAN_BRANCH"
+          echo "Uppercase branch: ${CLEAN_BRANCH^^}"
+          echo "Lowercase branch: ${CLEAN_BRANCH,,}"
+          [[ $CLEAN_BRANCH == *main* ]] && echo "Branch contains 'main': true" || echo "Branch contains 'main': false"
+          [[ $CLEAN_BRANCH == feature/* ]] && echo "Branch starts with 'feature': true" || echo "Branch starts with 'feature': false"
 
           echo "=== Conditional Logic ==="
-          echo "Environment type: ${{ github.ref_name == 'main' && 'production' || 'development' }}"
-          echo "Runner type: ${{ runner.os == 'Linux' && 'unix' || 'other' }}"
-          echo "Branch category: ${{ startsWith(github.ref_name, 'feature/') && 'feature' || 'stable' }}"
+          [[ "$CLEAN_BRANCH" == "main" ]] && echo "Environment type: production" || echo "Environment type: development"
+          [[ "${RUNNER_OS}" == "Linux" ]] && echo "Runner type: unix" || echo "Runner type: other"
+          [[ $CLEAN_BRANCH == feature/* ]] && echo "Branch category: feature" || echo "Branch category: stable"
